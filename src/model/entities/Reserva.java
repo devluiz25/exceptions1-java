@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.DomainException;
+
 public class Reserva {
 
 	private Integer roomNumber;
@@ -12,7 +14,15 @@ public class Reserva {
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-	public Reserva(Integer roomNumber, Date checkIn, Date checkOut) {
+	public Reserva(Integer roomNumber, Date checkIn, Date checkOut) throws DomainException {
+		Date agora = new Date();
+		if (checkIn.before(agora) || checkOut.before(agora)) {
+			throw new DomainException("AS DATAS DE RESERVA TEM QUE SER DATAS FUTURAS!");
+		}
+		if (!checkOut.after(checkIn)) {
+			throw new DomainException("A DATA DE CHECK-OUT DEVE SER APÓS A DATA DE CHECK-IN!");
+		}
+
 		this.roomNumber = roomNumber;
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
@@ -39,31 +49,22 @@ public class Reserva {
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
 
-	public String updateDates(Date checkIn, Date checkOut) {
+	public void updateDates(Date checkIn, Date checkOut) throws DomainException {
 		Date agora = new Date();
 		if (checkIn.before(agora) || checkOut.before(agora)) {
-			return "AS DATAS DE RESERVA TEM QUE SER DATAS FUTURAS!";
-		}  
-		if (!checkOut.after(checkIn)) {
-			return "A DATA DE CHECK-OUT DEVE SER APÓS A DATA DE CHECK-IN!";
+			throw new DomainException("AS DATAS DE RESERVA TEM QUE SER DATAS FUTURAS!");
 		}
-		
+		if (!checkOut.after(checkIn)) {
+			throw new DomainException("A DATA DE CHECK-OUT DEVE SER APÓS A DATA DE CHECK-IN!");
+		}
+
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
-		
-		return null;
 	}
 
 	@Override
 	public String toString() {
-		return "QUARTO " 
-			+ roomNumber 
-			+ ", CHECK-IN: " 
-			+ sdf.format(checkIn) 
-			+ ", CHECK-OUT: " 
-			+ sdf.format(checkOut) 
-			+ ", " 
-			+ duration() 
-			+ " NOITES";
-		}
+		return "QUARTO " + roomNumber + ", CHECK-IN: " + sdf.format(checkIn) + ", CHECK-OUT: " + sdf.format(checkOut)
+				+ ", " + duration() + " NOITES";
 	}
+}
