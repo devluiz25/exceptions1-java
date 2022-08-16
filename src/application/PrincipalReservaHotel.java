@@ -35,14 +35,10 @@ public class PrincipalReservaHotel {
 				System.out.print("CHECK-OUT DATE(DD/MM/YYYY): ");
 				checkOut = sdf.parse(sc.next());
 
-				Date agora = new Date();
-
-				if (checkIn.before(agora) || checkOut.before(agora)) {
-					System.out.println("ERRO NA RESERVA, AS DATAS DE RESERVA TEM QUE SER DATAS FUTURAS!");
-				} else if (!checkOut.after(checkIn)) {
-					System.out.println("ERRO NA RESERVA, A DATA DE CHECK-OUT DEVE SER APÓS A DATA DE CHECK-IN!");
+				String erro = reserva.updateDates(checkIn, checkOut);
+				if (erro != null) {
+					System.out.println("ERRO NA RESERVA: " + erro);
 				} else {
-					reserva.updateDates(checkIn, checkOut);
 					System.out.println("RESERVA: " + reserva);
 				}
 			}
